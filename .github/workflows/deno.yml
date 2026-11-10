@@ -1,0 +1,76 @@
+
+name: Nexora CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Verificar projeto
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verificar package.json
+        run: |
+          if [ ! -f package.json ]; then
+            echo "package.json não encontrado"
+            exit 1
+          fi
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Verificar sintaxe JavaScript
+        run: |
+          for file in script.js logic.js questionnaire.js tabs.js; do
+            if [ -f "$file" ]; then
+              echo "Verificando $file"
+              node --check "$file"
+            fi
+          done
+
+      - name: Executar testes
+        run: npm test --if-present
+
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        # uses: denoland/setup-deno@v1
+        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31  # v1.1.2
+        with:
+          deno-version: v1.x
+
+      # Uncomment this step to verify the use of 'deno fmt' on each commit.
+      # - name: Verify formatting
+      #   run: deno fmt --check
+
+      - name: Run linter
+        run: deno lint
+
+      - name: Run tests
+        run: deno test -A

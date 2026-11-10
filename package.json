@@ -1,1 +1,15 @@
 
+{
+  "name": "nexora",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Projeto Nexora",
+  "scripts": {
+    "test": "node --test",
+    "start": "npx serve ."
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
+
